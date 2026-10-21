@@ -77,6 +77,7 @@ td img{width:44px;height:44px;border-radius:8px;object-fit:cover}
 .import-line{display:flex;gap:8px;margin:6px 0 12px}.import-line input{min-width:0}.import-line button{min-width:112px}.import-state{font-size:12px;color:var(--mut);padding:12px 14px;border:1px solid var(--line);border-radius:10px;margin:10px 0;background:#f7f9f2}.import-state[data-kind="error"]{border-color:#e5c7ba;background:#fff6ef;color:#794b32}.import-state[data-kind="ok"]{border-color:#b8d19e;background:#f0f6e8;color:#31552d}.import-state[data-kind="loading"]{border-style:dashed}.import-state[hidden],.import-preview[hidden]{display:none}.import-preview{display:flex;align-items:center;gap:13px;border:1px solid var(--line);padding:12px;border-radius:12px;margin:12px 0 16px}.import-preview img{width:68px;height:68px;object-fit:contain;border-radius:8px;background:white}.import-preview img[hidden]{display:none}.import-preview b{font-size:12px;line-height:1.4;display:block}.import-preview span{font-size:11px;color:var(--mut);display:block;margin-top:4px}.capture-help{border:1px solid var(--line);padding:12px 14px;border-radius:10px;margin:12px 0 20px;font-size:12px}.capture-help summary{cursor:pointer;font-weight:600}.capture-help ol{padding-left:20px;line-height:1.8;margin:12px 0}.capture-help p{margin:10px 0;color:var(--mut)}.capture-help textarea{font-size:11px;margin-bottom:8px}.capture-help .btn{font-size:11px;padding:9px 12px}.capture-help .bookmarklet{cursor:grab;text-decoration:none;background:#e7f0d9;border:1px dashed #a4b98b;color:#284d2c;padding:4px 8px;border-radius:6px;display:inline-block;font-weight:600}.import-line .btn:disabled{opacity:.65}.import-preview-text{min-width:0;overflow-wrap:anywhere}
 @media(max-width:500px){.import-line{flex-wrap:wrap}.import-line input{flex-basis:100%}.import-line .btn{width:100%}.import-preview img{width:52px;height:52px}.capture-help{padding:11px}}
 
+.online-import-note{font-size:11px;line-height:1.7;color:var(--mut);margin:0 0 10px}.import-preview img{max-width:68px}
 </style>
 </head>
 <body>
@@ -159,9 +160,10 @@ function renderAdmin(){
  <div class="panel"><h3>${e?"Editar produto":"Novo produto"}</h3>
  <label style="font-size:12px;font-weight:800;color:var(--mut)">Cole o link do produto</label>
  <div class="import-line"><input id="fu" type="url" aria-label="Link de afiliado do produto" placeholder="Cole o link completo ou encurtado do produto" value="${esc(e?.url||"")}"><button class="btn" id="auto-fill" onclick="auto()">Preencher</button></div>
+ <p class="online-import-note">Ao clicar em Preencher, o link público será consultado por Jina Reader e, se necessário, Microlink. A disponibilidade depende desses serviços e da loja. Confira os dados antes de publicar.</p>
  <div id="import-status" class="import-state" role="status" aria-live="polite" hidden></div>
  <div id="import-preview" class="import-preview" hidden><img id="import-photo" alt="Prévia da foto importada"><div class="import-preview-text"><b id="import-name"></b><span id="import-fields"></span><span id="import-source"></span></div></div>
- <details class="capture-help" id="capture-help"><summary>A loja bloqueou a consulta? Capture pela página aberta</summary><p>Esta opção também funciona com o HTML aberto no computador, sem serviço de importação.</p><ol><li>Mostre a barra de favoritos (Ctrl + Shift + B) e arraste <a class="bookmarklet" id="capture-bookmark" href="${esc(captureBookmark())}" onclick="event.preventDefault();importStatus('Arraste este botão para a barra de favoritos. Depois use o favorito na página do produto.','error')">Capturar achadinho</a> para ela.</li><li><a id="open-product" href="${esc(e?.url||'#')}" target="_blank" rel="noopener noreferrer" onclick="return openImportProduct(this)">Abra o produto</a>, espere carregar e clique no favorito <b>Capturar achadinho</b>. Os dados serão copiados.</li><li>Volte para cá, cole os dados abaixo e clique em <b>Ler dados colados</b>.</li></ol><textarea id="import-paste" rows="3" aria-label="Dados copiados do produto" placeholder="Cole aqui os dados capturados ou o código HTML salvo da página…"></textarea><button class="btn ghost" onclick="pasteProduct()">Ler dados colados</button><p>A captura lê apenas a página aberta. Confira o preço e a variação selecionada antes de salvar.</p></details>
+ <details class="capture-help" id="capture-help"><summary>A loja bloqueou a consulta? Capture pela página aberta</summary><p>Use esta opção se a consulta online falhar. Ela lê os dados da página que você abriu no navegador.</p><ol><li>Mostre a barra de favoritos (Ctrl + Shift + B) e arraste <a class="bookmarklet" id="capture-bookmark" href="${esc(captureBookmark())}" onclick="event.preventDefault();importStatus('Arraste este botão para a barra de favoritos. Depois use o favorito na página do produto.','error')">Capturar achadinho</a> para ela.</li><li><a id="open-product" href="${esc(e?.url||'#')}" target="_blank" rel="noopener noreferrer" onclick="return openImportProduct(this)">Abra o produto</a>, espere carregar e clique no favorito <b>Capturar achadinho</b>. Os dados serão copiados.</li><li>Volte para cá, cole os dados abaixo e clique em <b>Ler dados colados</b>.</li></ol><textarea id="import-paste" rows="3" aria-label="Dados copiados do produto" placeholder="Cole aqui os dados capturados ou o código HTML salvo da página…"></textarea><button class="btn ghost" onclick="pasteProduct()">Ler dados colados</button><p>A captura lê apenas a página aberta. Confira o preço e a variação selecionada antes de salvar.</p></details>
  <div class="f"><div><label>Nome</label><input id="fn" value="${esc(e?.name||"")}"></div>
  <div><label>Loja</label><input id="fs" value="${esc(e?.store||"")}"></div>
  <div><label>Categoria</label><select id="fc">${S.cats.map(c=>`<option ${e?.cat===c?"selected":""}>${esc(c)}</option>`).join("")}</select></div>
@@ -171,7 +173,7 @@ function renderAdmin(){
  <div><label>ou enviar foto</label><input id="ff" type="file" accept="image/*"></div></div>
  <div style="margin:10px 0"><label style="font-size:12px;font-weight:800;color:var(--mut)">Descrição</label><textarea id="fd" rows="2">${esc(e?.desc||"")}</textarea></div>
  <button class="btn" onclick="add()">${e?"Salvar alterações":"Adicionar ao catálogo"}</button> ${e?`<button class="btn ghost" onclick="editing=null;render()">Cancelar</button>`:""}
- <p class="note">O botão Preencher busca nome, foto, preço, preço anterior, descrição e categoria. Se a loja bloquear a consulta, use a captura pela página aberta. Seu link de afiliado é mantido. Revise os dados antes de salvar. Depois de editar, clique em <b>Baixar site atualizado</b> e substitua o HTML na sua hospedagem para atualizar o catálogo para todos.</p></div>
+ <p class="note">O botão Preencher consulta serviços online para buscar nome, foto, preço, preço anterior, descrição e categoria. Quando a página só mostra o resumo da oferta, a descrição parte do título. Se a consulta falhar, use a captura pela página aberta. Seu link de afiliado é mantido. Revise os dados antes de salvar. Depois de editar, clique em <b>Baixar site atualizado</b> e substitua o HTML na sua hospedagem para atualizar o catálogo para todos.</p></div>
  <div class="two"><div class="panel"><h3>Produtos por categoria</h3>${bars(s.cats)}</div><div class="panel"><h3>Produtos por loja</h3>${bars(s.stores)}</div>
  <div class="panel"><h3>Visitas (7 dias)</h3>${bars(days7())}</div><div class="panel"><h3>Mais clicados</h3>${bars(top.map(p=>[p.name.slice(0,16),ST.prod[p.id]]))}</div></div>
  <div class="panel"><h3>Todos os produtos</h3><div class="tw"><table><tr><th></th><th>Produto</th><th>Loja</th><th>Cliques</th><th>Status</th><th>Ações</th></tr>
@@ -238,30 +240,85 @@ function applyImportedProduct(p,source,initial){
  }
  if(!found.includes('preço anterior')&&(!initial||$('#fo').value===initial['#fo']))$('#fo').value='';
  const box=$('#import-preview');box.hidden=false;$('#import-name').textContent=p.name.slice(0,400);$('#import-fields').textContent='Importado: '+found.join(', ')+'.';$('#import-source').textContent=source;
- const photo=$('#import-photo');const img=ImportTools.image(p.img,p.sourceUrl);photo.hidden=!img;if(img){photo.src=img;photo.onerror=()=>{photo.hidden=true}}else photo.removeAttribute('src');
+ const photo=$('#import-photo');const img=ImportTools.image(p.img,p.sourceUrl);photo.hidden=!img;if(img){photo.referrerPolicy="no-referrer";photo.onload=()=>{photo.hidden=false};photo.onerror=()=>{photo.hidden=true};photo.src=img}else photo.removeAttribute('src');
  const missing=[!p.price?'preço':'',!p.img?'foto':'',!p.desc?'descrição':''].filter(Boolean);
  importStatus('Dados importados. '+(missing.length?'Não disponível: '+missing.join(', ')+'. ':'')+'Confira as informações e salve o produto. Seu link de afiliado foi mantido.',missing.length?'error':'ok');
 }
-async function auto(){
- const u=$('#fu').value.trim();let url;try{url=new URL(u);if(url.protocol!=='https:')throw Error()}catch{importStatus('Cole um link HTTPS válido do produto.','error');return}
- importRequest?.abort();const controller=new AbortController();importRequest=controller;
- const initial=Object.fromEntries(['#fn','#fs','#fc','#fp','#fo','#fi','#fd'].map(sel=>[sel,$(sel).value]));
- const button=$('#auto-fill');button.disabled=true;button.textContent='Buscando…';$('#import-preview').hidden=true;importStatus('Abrindo o link e procurando os dados do produto…','loading');
- const timeout=setTimeout(()=>controller.abort(),25000);
- try{
-  if(location.protocol==='file:')throw Error('Abra o site publicado com o serviço de importação ou use a captura pela página aberta abaixo.');
-  const r=await fetch('/api/product',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:u}),signal:controller.signal});
-  if(r.status===404)throw Error('O serviço de importação ainda não está publicado. Envie também a pasta api e os outros arquivos do pacote para a Vercel, ou use a captura abaixo.');
-  const type=r.headers.get('content-type')||'';if(!type.includes('application/json'))throw Error('O serviço de importação não foi encontrado nesta hospedagem. Use o pacote completo ou a captura abaixo.');
-  const data=await r.json();if(!r.ok||!data.product)throw Error(data.message||'A loja não disponibilizou os dados. Use a captura pela página aberta.');
-  if($('#fu')?.value.trim()!==u||importRequest!==controller)return;
-  applyImportedProduct(data.product,'Consultado agora · '+new URL(data.product.sourceUrl||u).hostname,initial);
- }catch(e){
-  if(importRequest!==controller||!$('#fu')||$('#fu').value.trim()!==u)return;
-  const guessedStore=ImportTools.store(u);if(guessedStore&&$('#fs').value===initial['#fs'])$('#fs').value=guessedStore;
-  importStatus(e.name==='AbortError'?'A consulta demorou mais do que o esperado. Use a captura pela página aberta ou tente novamente.':e.message,'error');$('#capture-help').open=true;
- }finally{clearTimeout(timeout);if(importRequest===controller){importRequest=null;const b=$('#auto-fill');if(b){b.disabled=false;b.textContent='Preencher'}}}
+const PUBLIC_STORES=['meli.la','mercadolivre.com.br','mercadolibre.com','shopee.com.br','shopee.com','shp.ee','amazon.com.br','amazon.com','amzn.to','amzn.eu','aliexpress.com','aliexpress.us','magazineluiza.com.br','magalu.com','magazinevoce.com.br'];
+function publicProductUrl(value){const u=new URL(value);if(u.protocol!=='https:'||u.username||u.password||u.port&&!['443'].includes(u.port)||!PUBLIC_STORES.some(d=>u.hostname===d||u.hostname.endsWith('.'+d)))throw Error('Use um link HTTPS de Mercado Livre, Shopee, Amazon, AliExpress ou Magalu.');return u.href}
+const sameTitle=(a,b)=>normalize(a).replace(/[^a-z0-9]+/g,' ').trim()===normalize(b).replace(/[^a-z0-9]+/g,' ').trim();
+function cardProduct(doc,url){
+ // A short affiliate link can lead to a social profile containing many products.
+ // Only read the explicitly featured/single product, never the recommendations.
+ let card=doc.querySelector('.ui-recommendations-list__items-wrapper--single .poly-card,.poly-card--featured');
+ if(!card){const wanted=doc.querySelector('meta[property="og:title"]')?.content;const title=wanted&&[...doc.querySelectorAll('.poly-component__title')].find(n=>sameTitle(n.textContent,wanted));card=title?.closest('.poly-card')}
+ if(!card)return null;
+ const title=card.querySelector('.poly-component__title');const name=ImportTools.clean(title?.textContent);if(!name)return null;
+ const amount=selector=>{const n=card.querySelector(selector);if(!n)return null;const fraction=n.querySelector('.andes-money-amount__fraction'),cents=n.querySelector('.andes-money-amount__cents');return fraction?ImportTools.money(fraction.textContent.replace(/\D/g,'')+'.'+(cents?.textContent.trim()||'00').padEnd(2,'0')):ImportTools.money(n.textContent)};
+ const price=amount('.poly-price__current .andes-money-amount');const previous=amount('.andes-money-amount--previous');
+ const image=card.querySelector('img.poly-component__picture');const img=ImportTools.image(image?.getAttribute('src')||image?.getAttribute('data-src'),url);
+ const seller=ImportTools.clean(card.querySelector('.poly-component__seller')?.textContent);let detailsUrl='';try{const raw=new URL(title.getAttribute('href'),url);const params=new URLSearchParams(raw.hash.slice(1));const wid=raw.searchParams.get('wid')||params.get('wid');const filter=raw.searchParams.get('pdp_filters');raw.hash='';raw.search='';if(wid&&/^MLB\d+$/.test(wid))raw.searchParams.set('wid',wid);if(filter)raw.searchParams.set('pdp_filters',filter);detailsUrl=publicProductUrl(raw.href)}catch{}
+ return {name,price,old:previous&&price&&previous>price?previous:null,img,desc:[name,seller?'Loja: '+seller.replace(/^Por\s+/i,''):''].filter(Boolean).join('\n'),cat:ImportTools.category(name),store:ImportTools.store(url)||'Mercado Livre',currency:'BRL',sourceUrl:url,detailsUrl,productDetected:true,descriptionKind:'title',capturedAt:new Date().toISOString()};
 }
+function markdownProduct(raw,url){
+ const lines=raw.split('\n'),title=lines.find(s=>s.startsWith('Title: '))?.slice(7).trim();if(!title)return null;
+ const images=[...raw.matchAll(/!\[(?:Image\s+\d+:?\s*)?([^\]]*)\]\((https?:[^\s)]+)\)/g)];const image=images.find(m=>sameTitle(m[1],title));if(!image)return null;
+ const start=raw.indexOf(image[0]);const rest=raw.slice(start+image[0].length);const next=rest.search(/!\[/);const part=rest.slice(0,next<0?3000:next);
+ const prices=part.split('\n').filter(s=>!/(?:\d+\s*x\s*|cupom|meli\+|assinatura|primeira compra)/i.test(s));const oldLine=prices.find(s=>/~~.*R\$/.test(s));const current=prices.find(s=>/R\$/.test(s)&&!s.includes('~~'));
+ const amount=s=>ImportTools.money((s||'').match(/R\$\s*(\d[\d.]*,\d{2}|\d+[.]\d{2}|\d+)/)?.[1]);const price=amount(current),old=amount(oldLine);
+ if(!price)return null;
+ return {name:title,img:ImportTools.image(image[2],url),price,old:old>price?old:null,desc:title,cat:ImportTools.category(title),store:ImportTools.store(url),currency:'BRL',sourceUrl:url,productDetected:true,descriptionKind:'title'};
+}
+function readProductPage(raw,url){
+ if(!/^\s*(?:<!doctype|<html|<head|<meta)/i.test(raw))return markdownProduct(raw,url);
+ const doc=new DOMParser().parseFromString(raw,'text/html');const result=ImportTools.extract(doc,url);
+ if(result.productDetected&&result.name&&!/captcha|access denied|acesso negado|verifique.*humano|iniciar sess[aã]o|mercado libre$/i.test(result.name))return result;
+ return cardProduct(doc,url);
+}
+async function limitedPublicFetch(url,{signal,headers}={}){
+ const r=await fetch(url,{method:'GET',headers,signal,credentials:'omit',referrerPolicy:'no-referrer'});
+ if(!r.ok)throw Error(r.status===429?'O serviço de leitura atingiu o limite temporário. Tente novamente mais tarde ou use a captura abaixo.':'O serviço não conseguiu ler esta página.');
+ if(!r.body){const text=await r.text();if(text.length>3000000)throw Error('A resposta da loja é muito grande.');return text}
+ const reader=r.body.getReader(),chunks=[];let size=0;try{while(true){const {done,value}=await reader.read();if(done)break;size+=value.length;if(size>3000000)throw Error('A resposta da loja é muito grande.');chunks.push(value)}}catch(e){await reader.cancel();throw e}
+ const decoder=new TextDecoder();return chunks.map(c=>decoder.decode(c,{stream:true})).join('')+decoder.decode();
+}
+async function readThroughService(url,signal){const text=await limitedPublicFetch('https://r.jina.ai/'+url,{signal,headers:{'X-Respond-With':'html'}});return readProductPage(text,url)}
+async function metadataThroughService(url,signal){
+ const raw=await limitedPublicFetch('https://api.microlink.io?'+new URLSearchParams({url}),{signal});const data=JSON.parse(raw);if(data.status!=='success'||!data.data)throw Error('Metadados indisponíveis.');const p=data.data;
+ const name=ImportTools.clean(p.title);const img=ImportTools.image(p.image?.url,url);if(!name||!img||/perfil social|^mercado liv?re$|access denied|captcha|acesso negado/i.test(name))throw Error('A loja não retornou os dados do produto.');
+ const generic=/visite a p[aá]gina.*todos os produtos|perfil social|produtos.*em um s[oó] lugar/i.test(p.description||'');
+ return {name,img,desc:generic?name:ImportTools.clean(p.description)||name,cat:ImportTools.category(name),store:ImportTools.store(url)||ImportTools.store(p.url),sourceUrl:p.url||url,currency:'BRL',productDetected:true,descriptionKind:generic?'title':'metadata'};
+}
+function importSnapshot(){return Object.fromEntries(['#fn','#fs','#fc','#fp','#fo','#fi','#fd'].map(sel=>[sel,$(sel).value]))}
+async function auto(){
+ const original=$('#fu').value.trim();let url;try{url=publicProductUrl(original)}catch(e){importStatus(e.message||'Cole um link HTTPS válido.','error');return}
+ importRequest?.abort();const controller=new AbortController();importRequest=controller;
+ let snapshot=importSnapshot();const button=$('#auto-fill');button.disabled=true;button.textContent='Consultando…';$('#import-preview').hidden=true;importStatus('Consultando a página pelo serviço de leitura online…','loading');
+ const current=()=>importRequest===controller&&$('#fu')?.value.trim()===original;
+ let timer=setTimeout(()=>controller.abort(),25000),product,error;
+ try{
+  try{product=await readThroughService(url,controller.signal)}catch(e){error=e}
+  if(!current())return;
+  if(!product||!product.img){
+   importStatus('Tentando a leitura alternativa dos dados do link…','loading');
+   try{const meta=await metadataThroughService(url,controller.signal);product=product?{...meta,...product,img:product.img||meta.img}:meta}catch(e){error=e}
+  }
+  if(!current())return;
+  if(!product||!product.name||(!product.img&&!product.price))throw error||Error('A loja não disponibilizou os dados. Use a captura pela página aberta abaixo.');
+  applyImportedProduct(product,'Leitura online · confira os valores na loja antes de publicar',snapshot);
+  if(product.detailsUrl){
+   snapshot=importSnapshot();clearTimeout(timer);timer=setTimeout(()=>controller.abort(),18000);importStatus('Nome, foto e valores encontrados. Procurando a descrição completa…','loading');
+   try{const detail=await readThroughService(product.detailsUrl,controller.signal);if(current()&&detail?.productDetected&&detail.desc){const combined={...product,desc:detail.desc,descriptionKind:'full'};product=combined;applyImportedProduct(combined,'Leitura online · dados da página do produto',snapshot)}}catch{}
+  }
+  if(current()){
+   const missing=[!product.price?'preço':'',!product.img?'foto':''].filter(Boolean);
+   importStatus(missing.length?'Importação parcial. Confira '+missing.join(' e ')+' na loja e complete os campos.':'Dados preenchidos. Confira os valores e a variação antes de salvar. Seu link de afiliado foi mantido.',missing.length?'error':'ok');
+   if(product.descriptionKind==='title')$('#import-source').textContent='Nome, foto e valores da oferta. Descrição baseada no título; revise ou complemente.';
+  }
+ }catch(e){if(current()){if(!$('#fs').value)$('#fs').value=ImportTools.store(original);importStatus(e.name==='AbortError'?'A consulta demorou mais que o esperado. Tente novamente ou use a captura pela página aberta.':(/Failed to fetch|NetworkError|Load failed/i.test(e.message||'')?'Não foi possível acessar o serviço de leitura. Confira a conexão ou use a captura abaixo.':e.message)||'Não foi possível consultar a loja. Use a captura abaixo.','error');$('#capture-help').open=true}}
+ finally{clearTimeout(timer);if(importRequest===controller){importRequest=null;const b=$('#auto-fill');if(b){b.disabled=false;b.textContent='Preencher'}}}
+}
+
 function pasteProduct(){try{
  const text=$('#import-paste').value.trim();if(!text)throw Error('Cole os dados capturados primeiro.');if(text.length>3000000)throw Error('O conteúdo é muito grande. Use a captura pelo favorito.');
  let product;if(text.startsWith('CAFOFO_PRODUCT_V1:'))product=JSON.parse(text.slice('CAFOFO_PRODUCT_V1:'.length));
