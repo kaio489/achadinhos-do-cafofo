@@ -73,6 +73,10 @@ td img{width:44px;height:44px;border-radius:8px;object-fit:cover}
 @media(max-width:359px){.wrap{padding-left:14px;padding-right:14px}.hero h1{font-size:36px}.top .btn{padding:9px}.top .btn .icon{display:none}.store-names{gap:12px;font-size:11px}.club-card{display:flex;align-items:flex-start}.club-card h3{max-width:none}.club-card p{margin:12px 0}.club-card>small{margin-left:0}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important;animation:none!important}.btn:hover,.card:hover{transform:none}}
 
+
+.import-line{display:flex;gap:8px;margin:6px 0 12px}.import-line input{min-width:0}.import-line button{min-width:112px}.import-state{font-size:12px;color:var(--mut);padding:12px 14px;border:1px solid var(--line);border-radius:10px;margin:10px 0;background:#f7f9f2}.import-state[data-kind="error"]{border-color:#e5c7ba;background:#fff6ef;color:#794b32}.import-state[data-kind="ok"]{border-color:#b8d19e;background:#f0f6e8;color:#31552d}.import-state[data-kind="loading"]{border-style:dashed}.import-state[hidden],.import-preview[hidden]{display:none}.import-preview{display:flex;align-items:center;gap:13px;border:1px solid var(--line);padding:12px;border-radius:12px;margin:12px 0 16px}.import-preview img{width:68px;height:68px;object-fit:contain;border-radius:8px;background:white}.import-preview img[hidden]{display:none}.import-preview b{font-size:12px;line-height:1.4;display:block}.import-preview span{font-size:11px;color:var(--mut);display:block;margin-top:4px}.capture-help{border:1px solid var(--line);padding:12px 14px;border-radius:10px;margin:12px 0 20px;font-size:12px}.capture-help summary{cursor:pointer;font-weight:600}.capture-help ol{padding-left:20px;line-height:1.8;margin:12px 0}.capture-help p{margin:10px 0;color:var(--mut)}.capture-help textarea{font-size:11px;margin-bottom:8px}.capture-help .btn{font-size:11px;padding:9px 12px}.capture-help .bookmarklet{cursor:grab;text-decoration:none;background:#e7f0d9;border:1px dashed #a4b98b;color:#284d2c;padding:4px 8px;border-radius:6px;display:inline-block;font-weight:600}.import-line .btn:disabled{opacity:.65}.import-preview-text{min-width:0;overflow-wrap:anywhere}
+@media(max-width:500px){.import-line{flex-wrap:wrap}.import-line input{flex-basis:100%}.import-line .btn{width:100%}.import-preview img{width:52px;height:52px}.capture-help{padding:11px}}
+
 </style>
 </head>
 <body>
@@ -154,7 +158,10 @@ function renderAdmin(){
  <div class="kpi"><b>${ST.visits?Math.round(ST.clicks/ST.visits*100):0}%</b><span>Cliques por visita</span></div></div>
  <div class="panel"><h3>${e?"Editar produto":"Novo produto"}</h3>
  <label style="font-size:12px;font-weight:800;color:var(--mut)">Cole o link do produto</label>
- <div style="display:flex;gap:8px;margin-bottom:10px"><input id="fu" placeholder="https://shopee.com.br/..." value="${esc(e?.url||"")}"><button class="btn" onclick="auto()">Preencher</button></div>
+ <div class="import-line"><input id="fu" type="url" aria-label="Link de afiliado do produto" placeholder="Cole o link completo ou encurtado do produto" value="${esc(e?.url||"")}"><button class="btn" id="auto-fill" onclick="auto()">Preencher</button></div>
+ <div id="import-status" class="import-state" role="status" aria-live="polite" hidden></div>
+ <div id="import-preview" class="import-preview" hidden><img id="import-photo" alt="Prévia da foto importada"><div class="import-preview-text"><b id="import-name"></b><span id="import-fields"></span><span id="import-source"></span></div></div>
+ <details class="capture-help" id="capture-help"><summary>A loja bloqueou a consulta? Capture pela página aberta</summary><p>Esta opção também funciona com o HTML aberto no computador, sem serviço de importação.</p><ol><li>Mostre a barra de favoritos (Ctrl + Shift + B) e arraste <a class="bookmarklet" id="capture-bookmark" href="${esc(captureBookmark())}" onclick="event.preventDefault();importStatus('Arraste este botão para a barra de favoritos. Depois use o favorito na página do produto.','error')">Capturar achadinho</a> para ela.</li><li><a id="open-product" href="${esc(e?.url||'#')}" target="_blank" rel="noopener noreferrer" onclick="return openImportProduct(this)">Abra o produto</a>, espere carregar e clique no favorito <b>Capturar achadinho</b>. Os dados serão copiados.</li><li>Volte para cá, cole os dados abaixo e clique em <b>Ler dados colados</b>.</li></ol><textarea id="import-paste" rows="3" aria-label="Dados copiados do produto" placeholder="Cole aqui os dados capturados ou o código HTML salvo da página…"></textarea><button class="btn ghost" onclick="pasteProduct()">Ler dados colados</button><p>A captura lê apenas a página aberta. Confira o preço e a variação selecionada antes de salvar.</p></details>
  <div class="f"><div><label>Nome</label><input id="fn" value="${esc(e?.name||"")}"></div>
  <div><label>Loja</label><input id="fs" value="${esc(e?.store||"")}"></div>
  <div><label>Categoria</label><select id="fc">${S.cats.map(c=>`<option ${e?.cat===c?"selected":""}>${esc(c)}</option>`).join("")}</select></div>
@@ -164,7 +171,7 @@ function renderAdmin(){
  <div><label>ou enviar foto</label><input id="ff" type="file" accept="image/*"></div></div>
  <div style="margin:10px 0"><label style="font-size:12px;font-weight:800;color:var(--mut)">Descrição</label><textarea id="fd" rows="2">${esc(e?.desc||"")}</textarea></div>
  <button class="btn" onclick="add()">${e?"Salvar alterações":"Adicionar ao catálogo"}</button> ${e?`<button class="btn ghost" onclick="editing=null;render()">Cancelar</button>`:""}
- <p class="note">O botão  detecta a loja, sugere nome e categoria a partir do link. Lojas bloqueiam a leitura automática de foto e preço por navegador: cole o link da imagem (botão direito na foto → copiar endereço) ou envie o arquivo. Depois de editar, clique em <b>Baixar site atualizado</b> e substitua o HTML na sua hospedagem para atualizar o catálogo para todos.</p></div>
+ <p class="note">O botão Preencher busca nome, foto, preço, preço anterior, descrição e categoria. Se a loja bloquear a consulta, use a captura pela página aberta. Seu link de afiliado é mantido. Revise os dados antes de salvar. Depois de editar, clique em <b>Baixar site atualizado</b> e substitua o HTML na sua hospedagem para atualizar o catálogo para todos.</p></div>
  <div class="two"><div class="panel"><h3>Produtos por categoria</h3>${bars(s.cats)}</div><div class="panel"><h3>Produtos por loja</h3>${bars(s.stores)}</div>
  <div class="panel"><h3>Visitas (7 dias)</h3>${bars(days7())}</div><div class="panel"><h3>Mais clicados</h3>${bars(top.map(p=>[p.name.slice(0,16),ST.prod[p.id]]))}</div></div>
  <div class="panel"><h3>Todos os produtos</h3><div class="tw"><table><tr><th></th><th>Produto</th><th>Loja</th><th>Cliques</th><th>Status</th><th>Ações</th></tr>
@@ -175,7 +182,95 @@ function renderAdmin(){
  <p class="note">Visitas e cliques são contados neste navegador. Para contar o público inteiro (todos os visitantes), é preciso ligar o site a um banco de dados, como Supabase + Vercel. Dá para fazer como próximo passo. O login e a senha ficam no código da página, então servem como trava simples, não como segurança forte.</p></div>
  </div></div>`}
 
-function auto(){const u=$("#fu").value.trim();if(!u)return toast("Cole um link primeiro");const g=guess(u);$("#fs").value=storeOf(u);if(!$("#fn").value)$("#fn").value=g.name;$("#fc").value=g.cat;toast("Preenchido! Confira os dados")}
+// Shared by the server and the self-contained HTML. Never evaluates page scripts.
+function productTools(){
+ const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
+ const types=o=>[].concat(o?.['@type']||[]);
+ function money(v){if(typeof v==='number')return Number.isFinite(v)&&v>0?v:null;let s=clean(v).replace(/[^\d.,]/g,'');if(!s)return null;if(s.includes(','))s=s.replace(/\./g,'').replace(',','.');else if(/^\d{1,3}(\.\d{3})+$/.test(s))s=s.replace(/\./g,'');const n=Number(s);return Number.isFinite(n)&&n>0&&n<1e9?n:null}
+ function image(v,base){v=Array.isArray(v)?v[0]:v;if(v&&typeof v==='object')v=v.url||v.contentUrl;if(!v||typeof v!=='string')return '';try{const u=new URL(v,base);return /^https?:$/.test(u.protocol)?u.href:''}catch{return ''}}
+ function category(s){s=clean(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();return ([['Cozinha',/panela|fritadeira|talher|air.?fryer|cozinha|copo|prato|garrafa/],['Pet',/\bpet\b|cachorro|coleira|racao|gato/],['Eletrônicos',/fone|carregador|smart|celular|camera|bluetooth|mouse|teclado|eletron/],['Beleza',/creme|batom|perfume|maquiagem|cabelo|shampoo|skin/],['Ferramentas',/furadeira|parafus|ferramenta|alicate|serra/],['Casa e Móveis',/varal|lavanderia|puff|sofa|estante|mesa|cadeira|poltrona|organizador|luminaria|tapete|cama|casa|movel|moveis/],['Moda',/camisa|tenis|bolsa|vestido|relogio|bermuda|calca/]].find(x=>x[1].test(s))||[])[0]||'Outros'}
+ function store(url){let h='';try{h=new URL(url).hostname}catch{}return /mercadoli|meli\.la/.test(h)?'Mercado Livre':/shopee|shp\.ee/.test(h)?'Shopee':/amazon|amzn/.test(h)?'Amazon':/aliexpress/.test(h)?'AliExpress':/magalu|magazinevoce|magazineluiza/.test(h)?'Magalu':''}
+ function extract(doc,url){
+  const text=s=>clean(doc.querySelector(s)?.textContent);
+  const meta=(...keys)=>{for(const k of keys){const n=doc.querySelector(`meta[property="${k}"],meta[name="${k}"],meta[itemprop="${k}"]`);if(n?.getAttribute('content'))return clean(n.getAttribute('content'))}return ''};
+  const products=[];let visited=0;
+  function walk(n,depth=0){if(!n||typeof n!=='object'||depth>18||++visited>16000)return;if(Array.isArray(n)){n.forEach(v=>walk(v,depth+1));return}if(types(n).includes('Product'))products.push(n);for(const k of ['@graph','mainEntity','itemListElement','item','hasVariant'])if(n[k])walk(n[k],depth+1)}
+  doc.querySelectorAll('script[type="application/ld+json"]').forEach(s=>{try{walk(JSON.parse(s.textContent))}catch{}});
+  const p=products.find(x=>x.name&&x.offers)||products.find(x=>x.name)||{};
+  const offer=[].concat(p.offers||[]).find(o=>o.price!=null||o.priceSpecification?.price!=null)||[].concat(p.offers||[])[0]||{};
+  const displayedMoney=sel=>{const e=doc.querySelector(sel);if(!e)return null;const fraction=e.querySelector('.andes-money-amount__fraction');if(fraction){const f=clean(fraction.textContent).replace(/\D/g,'');const cents=clean(e.querySelector('.andes-money-amount__cents')?.textContent)||'00';return money(f+'.'+cents.padEnd(2,'0').slice(0,2))}return money(e.getAttribute('content')||e.textContent)};
+  const name=clean(p.name||text('.ui-pdp-title')||text('#productTitle')||text('[itemprop="name"]')||meta('og:title','twitter:title')||doc.title).replace(/\s*[|–-]\s*(Mercado Livre|Amazon\.com\.br|Shopee Brasil).*$/i,'');
+  const price=displayedMoney('.ui-pdp-price__second-line .andes-money-amount:not(.andes-money-amount--previous)')||money(offer.price??offer.priceSpecification?.price)||money(meta('product:price:amount','og:price:amount','price'))||displayedMoney('[itemprop="price"]')||displayedMoney('.a-price:not(.a-text-price) .a-offscreen');
+  const old=displayedMoney('.andes-money-amount--previous')||displayedMoney('.a-text-price .a-offscreen');
+  const currency=clean(offer.priceCurrency||meta('product:price:currency','og:price:currency','priceCurrency'));
+  const rawDesc=p.description||text('.ui-pdp-description__content')||meta('og:description','description','twitter:description');
+  const fragments=[...doc.querySelectorAll('.ui-pdp-highlights__item,#feature-bullets li')].map(x=>clean(x.textContent)).filter(Boolean);
+  const catText=clean(p.category||text('.andes-breadcrumb')||text('[aria-label="breadcrumb"]'));
+  const rating=p.aggregateRating||{};
+  const fields=[['Marca',typeof p.brand==='object'?p.brand?.name:p.brand],['Cor',p.color],['Modelo',p.model],['Material',p.material],['Avaliação',rating.ratingValue?`${rating.ratingValue}/5${rating.reviewCount?' ('+rating.reviewCount+' avaliações)':''}`:'']].filter(x=>x[1]);
+  const description=clean(rawDesc).replace(/<[^>]*>/g,'').slice(0,5000);
+  const desc=[description,...fragments,...fields.map(x=>x.join(': '))].filter(Boolean).filter((v,i,a)=>a.indexOf(v)===i).join('\n').slice(0,6000);
+  const img=image(p.image||meta('og:image','twitter:image')||doc.querySelector('.ui-pdp-image.ui-pdp-gallery__figure__image')?.getAttribute('src')||doc.querySelector('#landingImage')?.getAttribute('src'),url);
+  const productDetected=Boolean(products.length||doc.querySelector('.ui-pdp-title,#productTitle,[itemtype*="schema.org/Product"]')||/product/i.test(meta('og:type'))||price);
+  return {name:name.slice(0,400),price:currency&&currency!=='BRL'?null:price,old:old&&price&&old>price?old:null,img,desc,cat:category(catText+' '+name),store:store(url),sourceUrl:url,currency:currency||'BRL',brand:clean(typeof p.brand==='object'?p.brand?.name:p.brand),color:clean(p.color),rating:clean(rating.ratingValue),reviewCount:clean(rating.reviewCount),productDetected,capturedAt:new Date().toISOString()};
+ }
+ return {extract,money,category,store,image,clean};
+}
+
+const ImportTools=productTools();
+let importRequest=null;
+function importStatus(message,kind='ok'){const n=$('#import-status');if(!n)return;n.hidden=false;n.dataset.kind=kind;n.textContent=message}
+function openImportProduct(a){try{const u=new URL($('#fu').value.trim());if(u.protocol!=='https:')throw Error();a.href=u.href;return true}catch{importStatus('Cole primeiro um link HTTPS válido do produto.','error');return false}}
+function captureBookmark(){const program=`(()=>{const t=(${productTools.toString()})();const p=t.extract(document,location.href);if(!p.name||p.productDetected===false||(!p.img&&!p.price&&!p.desc)){alert('Abra a página de um produto e tente novamente.');return}const data='CAFOFO_PRODUCT_V1:'+JSON.stringify(p);const fallback=()=>prompt('Copie os dados abaixo e cole no painel do Cafofo:',data);if(navigator.clipboard&&document.hasFocus()){navigator.clipboard.writeText(data).then(()=>alert('Produto capturado! Volte ao painel e cole os dados em “Ler dados colados”.')).catch(fallback)}else fallback()})();`;return 'javascript:'+encodeURIComponent(program)}
+function applyImportedProduct(p,source,initial){
+ if(!p||typeof p!=='object'||typeof p.name!=='string'||!p.name.trim()||p.productDetected===false)throw Error('Os dados não contêm o nome do produto.');
+ const mapping={name:'#fn',store:'#fs',cat:'#fc',price:'#fp',old:'#fo',img:'#fi',desc:'#fd'};const found=[];
+ const labels={name:'nome',store:'loja',cat:'categoria',price:'preço',old:'preço anterior',img:'foto',desc:'descrição'};
+ for(const [key,sel]of Object.entries(mapping)){
+  const n=$(sel);let value=p[key];if(value==null||value==='')continue;
+  if(key==='price'||key==='old'){value=ImportTools.money(value);if(!value||p.currency&&p.currency!=='BRL')continue}
+  else if(typeof value!=='string')continue;
+  if(key==='img'){value=ImportTools.image(value,p.sourceUrl);if(!value)continue}
+  if(key==='cat'&&![...n.options].some(o=>o.value===value))continue;
+  // Preserve changes typed by the user while the network request was running.
+  if(initial&&n.value!==initial[sel])continue;
+  n.value=String(value).slice(0,key==='desc'?6000:2000);found.push(labels[key]);
+ }
+ if(!found.includes('preço anterior')&&(!initial||$('#fo').value===initial['#fo']))$('#fo').value='';
+ const box=$('#import-preview');box.hidden=false;$('#import-name').textContent=p.name.slice(0,400);$('#import-fields').textContent='Importado: '+found.join(', ')+'.';$('#import-source').textContent=source;
+ const photo=$('#import-photo');const img=ImportTools.image(p.img,p.sourceUrl);photo.hidden=!img;if(img){photo.src=img;photo.onerror=()=>{photo.hidden=true}}else photo.removeAttribute('src');
+ const missing=[!p.price?'preço':'',!p.img?'foto':'',!p.desc?'descrição':''].filter(Boolean);
+ importStatus('Dados importados. '+(missing.length?'Não disponível: '+missing.join(', ')+'. ':'')+'Confira as informações e salve o produto. Seu link de afiliado foi mantido.',missing.length?'error':'ok');
+}
+async function auto(){
+ const u=$('#fu').value.trim();let url;try{url=new URL(u);if(url.protocol!=='https:')throw Error()}catch{importStatus('Cole um link HTTPS válido do produto.','error');return}
+ importRequest?.abort();const controller=new AbortController();importRequest=controller;
+ const initial=Object.fromEntries(['#fn','#fs','#fc','#fp','#fo','#fi','#fd'].map(sel=>[sel,$(sel).value]));
+ const button=$('#auto-fill');button.disabled=true;button.textContent='Buscando…';$('#import-preview').hidden=true;importStatus('Abrindo o link e procurando os dados do produto…','loading');
+ const timeout=setTimeout(()=>controller.abort(),25000);
+ try{
+  if(location.protocol==='file:')throw Error('Abra o site publicado com o serviço de importação ou use a captura pela página aberta abaixo.');
+  const r=await fetch('/api/product',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:u}),signal:controller.signal});
+  if(r.status===404)throw Error('O serviço de importação ainda não está publicado. Envie também a pasta api e os outros arquivos do pacote para a Vercel, ou use a captura abaixo.');
+  const type=r.headers.get('content-type')||'';if(!type.includes('application/json'))throw Error('O serviço de importação não foi encontrado nesta hospedagem. Use o pacote completo ou a captura abaixo.');
+  const data=await r.json();if(!r.ok||!data.product)throw Error(data.message||'A loja não disponibilizou os dados. Use a captura pela página aberta.');
+  if($('#fu')?.value.trim()!==u||importRequest!==controller)return;
+  applyImportedProduct(data.product,'Consultado agora · '+new URL(data.product.sourceUrl||u).hostname,initial);
+ }catch(e){
+  if(importRequest!==controller||!$('#fu')||$('#fu').value.trim()!==u)return;
+  const guessedStore=ImportTools.store(u);if(guessedStore&&$('#fs').value===initial['#fs'])$('#fs').value=guessedStore;
+  importStatus(e.name==='AbortError'?'A consulta demorou mais do que o esperado. Use a captura pela página aberta ou tente novamente.':e.message,'error');$('#capture-help').open=true;
+ }finally{clearTimeout(timeout);if(importRequest===controller){importRequest=null;const b=$('#auto-fill');if(b){b.disabled=false;b.textContent='Preencher'}}}
+}
+function pasteProduct(){try{
+ const text=$('#import-paste').value.trim();if(!text)throw Error('Cole os dados capturados primeiro.');if(text.length>3000000)throw Error('O conteúdo é muito grande. Use a captura pelo favorito.');
+ let product;if(text.startsWith('CAFOFO_PRODUCT_V1:'))product=JSON.parse(text.slice('CAFOFO_PRODUCT_V1:'.length));
+ else if(text.startsWith('{')){const data=JSON.parse(text);product=data.product||data}
+ else if(/<(html|head|meta|script|!doctype)\b/i.test(text)){const doc=new DOMParser().parseFromString(text,'text/html');product=ImportTools.extract(doc,$('#fu').value.trim()||'https://www.mercadolivre.com.br')}
+ else throw Error('Cole o conteúdo gerado pelo favorito Capturar achadinho ou o código HTML da página.');
+ applyImportedProduct(product,'Captura da página aberta · confira preço e variação antes de salvar');
+ }catch(e){importStatus('Não foi possível importar: '+e.message,'error')}}
+
 const shrink=f=>new Promise(r=>{const i=new Image();i.onload=()=>{const k=Math.min(1,520/Math.max(i.width,i.height)),c=document.createElement("canvas");c.width=i.width*k;c.height=i.height*k;c.getContext("2d").drawImage(i,0,0,c.width,c.height);r(c.toDataURL("image/jpeg",.72))};i.src=URL.createObjectURL(f)});
 async function add(){const url=$("#fu").value.trim(),name=$("#fn").value.trim();if(!url||!name)return toast("Informe link e nome");
  let img=$("#fi").value.trim();const f=$("#ff").files[0];if(f)img=await shrink(f);
