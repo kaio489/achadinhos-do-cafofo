@@ -149,7 +149,7 @@ function days7(){const out=[];for(let i=6;i>=0;i--){const d=new Date(Date.now()-
 
 function renderAdmin(){
  if(!authed){$("#app").innerHTML=`<div class="ov"><div class="login panel"><h2>Área restrita</h2><p style="color:var(--mut)">Entre com seu login e senha</p><input id="usr" placeholder="Login" autocomplete="username" autofocus><br><br><input id="pin" type="password" placeholder="Senha" autocomplete="current-password"><br><br><button class="btn" id="go">Entrar</button> <button class="btn ghost" onclick="closeAdmin()">Voltar</button></div></div>`;
-  const go=()=>{if($("#usr").value.trim().toLowerCase()===S.user.toLowerCase()&&$("#pin").value===S.pin){authed=true;render()}else toast("Login ou senha incorretos")};$("#go").onclick=go;$("#pin").onkeydown=e=>e.key==="Enter"&&go();return}
+  const go=()=>{if($("#usr").value.trim().toLowerCase()===S.user.toLowerCase()&&$("#pin").value===S.pin){authed=true;render()}else toast("Login ou senha incorretos")};$("#go").onclick=go;$("#pin").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.isComposing){e.preventDefault();go()}});return}
  const s=stats(),top=[...S.products].sort((a,b)=>(ST.prod[b.id]||0)-(ST.prod[a.id]||0)).slice(0,5).filter(p=>ST.prod[p.id]);
  const e=editing?S.products.find(p=>p.id===editing):null;
  $("#app").innerHTML=`<div class="ov"><div class="ah"><div class="wrap"><div class="logo">Painel · Achadinho <b>do Cafofo</b></div><div class="sp"></div><button class="btn sm" onclick="pub()">Baixar site atualizado</button><button class="btn ghost sm" style="color:#fdf6e3" onclick="closeAdmin()">Ver site</button></div></div>
