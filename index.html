@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="description" content="Achadinhos para sua casa e seu dia a dia. Explore produtos, compare preços e acesse as ofertas nas lojas parceiras do Achadinho do Cafofo.">
-<meta name="app-version" content="10-ofertas-em-destaque">
+<meta name="app-version" content="11-login-direto">
 <meta name="theme-color" content="#193e30">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Achadinho do Cafofo | Ofertas e achadinhos para o seu dia a dia</title>
@@ -187,7 +187,7 @@ function renderSite(){
  <div class="tools"><div class="search-row"><label class="search-field" for="q">${icon('search')}<input id="q" type="search" autocomplete="off" aria-label="Buscar produto, categoria ou loja" placeholder="Buscar produto ou loja" value="${esc(q)}"></label><div class="sort-field"><label for="sort">Ordenar por</label><select id="sort" aria-label="Ordenar produtos"><option value="recent" ${order==='recent'?'selected':''}>Mais recentes</option><option value="low" ${order==='low'?'selected':''}>Menor preço</option><option value="high" ${order==='high'?'selected':''}>Maior preço</option><option value="discount" ${order==='discount'?'selected':''}>Maior desconto</option></select></div></div><nav class="chips" aria-label="Categorias de produtos">${cats.map(c=>`<button class="chip ${c===cat?'on':''}" data-c="${esc(c)}" aria-pressed="${c===cat}">${icon(categoryIcon(c))}${esc(c==='Todos'?'Todos os achados':c)}</button>`).join('')}</nav></div>
  <div class="results-bar"><span id="result-count" role="status" aria-live="polite"></span><button id="clear-filters" class="clear-filters" onclick="resetFilters()" hidden>Limpar filtros</button></div><div class="grid" id="products"></div>
  <section class="how" aria-label="Como funciona"><div class="how-item"><div class="how-icon">${icon('search')}</div><div><h3>Encontre seu achadinho</h3><p>Navegue pelas categorias ou busque o que precisa.</p></div></div><div class="how-item"><div class="how-icon">${icon('external')}</div><div><h3>Confira a oferta na loja</h3><p>Preços e disponibilidade podem mudar. Confira antes de comprar.</p></div></div><div class="how-item"><div class="how-icon">${icon('bag')}</div><div><h3>Compre do seu jeito</h3><p>Pagamento, entrega e atendimento são feitos pela loja.</p></div></div></section></main>
- <footer><div class="wrap"><div class="footer-row"><a class="brand" href="#" aria-label="Voltar ao início">${brand()}</a><p class="disclosure">Achadinhos para deixar a rotina mais prática. Como afiliados, podemos receber comissão pelas compras feitas pelos nossos links, sem custo extra para você.</p></div><div class="footer-bottom"><span>Achadinho do Cafofo · Feito para descobrir coisas boas.</span><div><span class="site-build">Versão 10</span><button class="admin-link" onclick="openAdmin('offers')">Painel administrativo · Ofertas</button></div></div></div></footer>`;
+ <footer><div class="wrap"><div class="footer-row"><a class="brand" href="#" aria-label="Voltar ao início">${brand()}</a><p class="disclosure">Achadinhos para deixar a rotina mais prática. Como afiliados, podemos receber comissão pelas compras feitas pelos nossos links, sem custo extra para você.</p></div><div class="footer-bottom"><span>Achadinho do Cafofo · Feito para descobrir coisas boas.</span><div><span class="site-build">Versão 11</span><button class="admin-link" onclick="openAdmin('offers')">Painel administrativo · Ofertas</button></div></div></div></footer>`;
  $('#q').oninput=e=>{q=e.target.value;updateResults()};$('#sort').onchange=e=>{order=e.target.value;updateResults()};
  document.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{cat=b.dataset.c;document.querySelectorAll('.chip').forEach(x=>{x.classList.toggle('on',x===b);x.setAttribute('aria-pressed',String(x===b))});updateResults()});
  updateResults();
@@ -214,12 +214,12 @@ function days7(){const out=[];for(let i=6;i>=0;i--){const d=new Date(Date.now()-
 function renderLogin(){
  $('#app').innerHTML=`<div class="ov access-screen"><main class="access-layout" aria-labelledby="access-title">
  <section class="access-identity" aria-label="Achadinho do Cafofo"><a class="access-home" href="#" id="access-home">${icon('arrow')} Voltar à loja</a><img class="access-logo" src="${BRAND_LOGO}" alt="Logo Achadinho do Cafofo" width="260" height="260"><div class="access-promise"><span>SEU CAFOFO DE BOAS DESCOBERTAS</span><h2>Boas ofertas. <br><em>Do seu jeito.</em></h2><p>Organize seus produtos e compartilhe os melhores achadinhos.</p></div><div class="access-signature">Achadinho do Cafofo</div></section>
- <section class="access-content"><div class="access-kicker">ÁREA DE GESTÃO</div><h1 id="access-title">Bem-vindo <br>ao seu painel.</h1><p class="access-description">Entre com o acesso seguro do seu catálogo.</p><div class="access-destination">${icon('chat')} Após entrar: <strong>${adminTab==='offers'?'Ofertas para o grupo':'Catálogo e gestão'}</strong></div>
- <form id="access-form" autocomplete="on"><div class="access-field"><label for="access-user">Seu e-mail</label><input id="access-user" name="username" type="email" placeholder="voce@email.com" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" required></div>
+ <section class="access-content"><div class="access-kicker">ÁREA DE GESTÃO</div><h1 id="access-title">Bem-vindo <br>ao seu painel.</h1><p class="access-description">Sua conta está pronta. Digite a senha para entrar.</p><div class="access-destination">${icon('chat')} Após entrar: <strong>${adminTab==='offers'?'Ofertas para o grupo':'Catálogo e gestão'}</strong></div>
+ <form id="access-form" autocomplete="on"><div class="access-field"><label for="access-user">Seu e-mail</label><input id="access-user" name="username" type="email" placeholder="Seu e-mail" value="jessecarvak@gmail.com" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" required></div>
  <div class="access-field"><label for="access-password">Sua senha</label><div class="access-password-row"><input id="access-password" name="password" type="password" inputmode="text" placeholder="Digite sua senha" autocomplete="current-password" autocapitalize="none" autocorrect="off" spellcheck="false" required><button type="button" id="access-reveal" aria-label="Mostrar senha" aria-pressed="false" aria-controls="access-password">Mostrar</button></div><p id="access-count" class="access-count" aria-live="polite">Você pode digitar ou colar sua senha.</p></div>
- <div class="access-mode"><button type="button" onclick="switchCloudAuth('${cloudAuthMode==='signup'?'login':'signup'}')">${cloudAuthMode==='signup'?'Já tenho acesso. Entrar':'Primeiro acesso? Criar minha conta'}</button></div><details class="access-activation" ${cloudAuthMode==='signup'?'open':''}><summary>Código de ativação · primeiro acesso</summary><label for="access-activation">Código entregue com esta atualização</label><input id="access-activation" type="password" autocomplete="off" placeholder="CAFOFO-…"><p>Usado uma única vez para vincular sua conta ao painel.</p></details><p id="access-error" class="access-error" role="alert" hidden></p><button class="access-submit" id="access-submit" type="submit">${cloudAuthMode==='signup'?'Criar acesso':'Entrar no painel'} ${icon('arrow')}</button>
+ <p id="access-error" class="access-error" role="alert" hidden></p><button class="access-submit" id="access-submit" type="submit">Entrar no painel ${icon('arrow')}</button>
  <button id="access-pad-toggle" class="access-pad-toggle" type="button" aria-controls="access-pad" aria-expanded="false">Usar teclado numérico na tela</button><div class="access-pad" id="access-pad" aria-label="Teclado numérico" hidden>${[1,2,3,4,5,6,7,8,9].map(n=>`<button type="button" data-digit="${n}" aria-label="Digitar ${n}">${n}</button>`).join('')}<button type="button" data-clear aria-label="Limpar senha">Limpar</button><button type="button" data-digit="0" aria-label="Digitar 0">0</button><button type="button" data-backspace aria-label="Apagar último caractere">Apagar</button></div>
- </form><p class="access-revision">Acesso protegido pelo Supabase · Versão 10</p></section></main></div>`;
+ </form><p class="access-revision">Acesso direto · Versão 11</p></section></main></div>`;
  const form=$('#access-form'),username=form.elements.namedItem('username'),password=form.elements.namedItem('password'),toggle=$('#access-reveal'),count=$('#access-count'),error=$('#access-error');
  const update=()=>{const n=password.value.length;count.textContent=n?`${n} ${n===1?'caractere digitado':'caracteres digitados'}`:'Você pode digitar ou colar sua senha.';error.hidden=true};
  password.addEventListener('input',update);password.addEventListener('change',update);username.addEventListener('input',()=>{error.hidden=true});
@@ -228,7 +228,7 @@ function renderLogin(){
  const pad=$('#access-pad'),padToggle=$('#access-pad-toggle');padToggle.addEventListener('click',()=>{pad.hidden=!pad.hidden;padToggle.setAttribute('aria-expanded',String(!pad.hidden));padToggle.textContent=pad.hidden?'Usar teclado numérico na tela':'Ocultar teclado numérico'});
  pad.querySelectorAll('button').forEach(button=>{button.addEventListener('pointerdown',event=>event.preventDefault());button.addEventListener('click',()=>{const start=password.selectionStart??password.value.length,end=password.selectionEnd??start;if(button.hasAttribute('data-clear'))password.value='';else if(button.hasAttribute('data-backspace'))password.setRangeText('',start===end?Math.max(0,start-1):start,end,'end');else password.setRangeText(button.dataset.digit,start,end,'end');password.dispatchEvent(new Event('input',{bubbles:true}));password.focus({preventScroll:true})})});
  form.addEventListener('submit',cloudLogin);
- username.focus({preventScroll:true});
+ password.focus({preventScroll:true});
 }
 
 function renderAdmin(){
@@ -533,7 +533,7 @@ const SUPABASE_KEY='sb_publishable_8f8lPYQvJU5eP9SAPTM-xw_d2Kl8_Y5';
 const db=CafofoSupabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{storageKey:'cafofo-auth-v1',persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
 const LEGACY_KEY='ach_legacy_before_supabase_v9';
 const Cloud={status:'loading',admin:false,session:null,initialized:false,remote:[],busy:false,loadedAt:0};
-let cloudAuthMode='login',cloudAuthBusy=false,editingRevision=null;
+let cloudAuthBusy=false,editingRevision=null;
 try{if(!localStorage.getItem(LEGACY_KEY)&&S.products.length)localStorage.setItem(LEGACY_KEY,JSON.stringify({S,ST,at:new Date().toISOString()}))}catch{}
 const legacyCatalog=ls.get(LEGACY_KEY,{S:JSON.parse(JSON.stringify(S)),ST});
 function cloudMessage(){return Cloud.status==='online'?'Conectado ao Supabase':Cloud.status==='loading'?'Conectando ao catálogo…':'Sem conexão: mostrando a cópia deste navegador'}
@@ -551,23 +551,19 @@ async function refreshCloud(redraw=false){
 async function checkCloudAdmin(){const {data:{session},error}=await db.auth.getSession();if(error)throw error;Cloud.session=session;Cloud.admin=false;if(!session)return false;const {data:{user},error:userError}=await db.auth.getUser();if(userError||!user)return false;const {data,error:memberError}=await db.from('cafofo_admins').select('user_id').eq('user_id',user.id).maybeSingle();if(memberError)throw memberError;Cloud.admin=Boolean(data);return Cloud.admin}
 async function openAdmin(target='offers'){adminTab=target==='catalog'?'catalog':'offers';admin=true;authed=false;renderLogin();try{if(await checkCloudAdmin()){authed=true;await refreshCloud();renderAdmin()}}catch{cloudLoginMessage('Não consegui verificar o acesso. Confira a conexão e tente entrar.')}scrollTo(0,0)}
 function cloudLoginMessage(message,good=false){const n=$('#access-error');if(n){n.hidden=false;n.textContent=message;n.style.cssText=good?'color:#31552e;background:#edf5e3':''}}
-function switchCloudAuth(mode){cloudAuthMode=mode;renderLogin()}
 async function cloudLogin(event){
- event.preventDefault();if(cloudAuthBusy)return;const email=$('#access-user').value.trim(),password=$('#access-password').value,code=$('#access-activation')?.value.trim().toUpperCase()||'';cloudAuthBusy=true;const submit=$('#access-submit');submit.disabled=true;submit.textContent='Conectando…';
+ event.preventDefault();if(cloudAuthBusy)return;
+ const email=$('#access-user').value.trim().toLowerCase(),password=$('#access-password').value;
+ cloudAuthBusy=true;const submit=$('#access-submit');submit.disabled=true;submit.textContent='Entrando…';
  try{
-  if(!email.includes('@'))throw Error('Entre com seu e-mail de administrador.');
-  if(cloudAuthMode==='signup'){
-   if(password.length<8)throw Error('Escolha uma senha com pelo menos 8 caracteres.');if(!code)throw Error('Informe o código de ativação que acompanha esta atualização.');
-   const {data,error}=await db.auth.signUp({email,password});if(error)throw error;
-   if(!data.session){cloudLoginMessage('Cadastro solicitado. Confirme o e-mail recebido e depois volte aqui, escolha Entrar e informe seu e-mail, senha e o código de ativação. Se não receber, verifique o spam ou crie/confirme este usuário na área Authentication do seu Supabase.',true);return}
-  }else{const {error}=await db.auth.signInWithPassword({email,password});if(error)throw error}
-  if(!await checkCloudAdmin()){
-   if(!code)throw Error('Para o primeiro acesso, informe também seu código de ativação.');
-   const {data,error}=await db.rpc('cafofo_claim_admin',{invite_code:code});if(error)throw error;if(data!==true)throw Error('Código inválido ou já utilizado. Confirme também seu e-mail.');if(!await checkCloudAdmin())throw Error('Não foi possível confirmar a ativação.');
-  }
+  if(!email.includes('@')||!password)throw Error('Informe seu e-mail e sua senha.');
+  const {error}=await db.auth.signInWithPassword({email,password});if(error)throw error;
+  if(!await checkCloudAdmin())throw Error('Esta conta não tem acesso ao painel do Achadinho do Cafofo.');
   authed=true;S.user='';S.pin='';await refreshCloud();renderAdmin();
- }catch(e){const text=e.message||'';cloudLoginMessage(/Invalid login credentials/i.test(text)?'E-mail ou senha incorretos. Use a conta criada para este painel.':/Email not confirmed/i.test(text)?'Confirme seu e-mail antes de entrar.':/fetch|network/i.test(text)?'Não consegui conectar ao Supabase. Tente novamente.':text||'Não foi possível entrar.')}finally{cloudAuthBusy=false;const b=$('#access-submit');if(b){b.disabled=false;b.innerHTML=(cloudAuthMode==='signup'?'Criar acesso':'Entrar no painel')+' '+icon('arrow')}}
+ }catch(e){const text=e.message||'';cloudLoginMessage(/Invalid login credentials/i.test(text)?'E-mail ou senha incorretos. Confira os dados e tente novamente.':/fetch|network/i.test(text)?'Não consegui conectar ao Supabase. Tente novamente.':text||'Não foi possível entrar.')}
+ finally{cloudAuthBusy=false;const b=$('#access-submit');if(b){b.disabled=false;b.innerHTML='Entrar no painel '+icon('arrow')}}
 }
+
 async function cloudLogout(){await db.auth.signOut({scope:'local'});Cloud.admin=false;Cloud.session=null;authed=false;admin=false;await refreshCloud();renderSite()}
 function requireCloudAdmin(){if(!authed||!Cloud.admin){toast('Entre no painel para salvar no Supabase.');return false}return true}
 function cloudError(e){return e?.code==='42501'?'Seu acesso não tem permissão para alterar o catálogo.':/fetch|network/i.test(e?.message||'')?'Falha de conexão. A alteração não foi confirmada no banco.':e?.message||'Não foi possível salvar no Supabase.'}
